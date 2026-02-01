@@ -69,9 +69,9 @@ api.interceptors.response.use(
 /**
  * Parse Axios errors into AppError format
  */
-function parseError(error: any): ApiError {
+function parseError(error: unknown): ApiError {
   // Network timeout
-  if (error.code === "ECONNABORTED") {
+  if ((error as Record<string, unknown>).code === "ECONNABORTED") {
     return new ApiError(
       ERROR_CODES.TIMEOUT,
       ERROR_MESSAGES.TIMEOUT,
@@ -80,7 +80,7 @@ function parseError(error: any): ApiError {
   }
 
   // Network error
-  if (!error.response && error.message === "Network Error") {
+  if (!(error as AxiosError).response && (error as AxiosError).message === "Network Error") {
     return new ApiError(
       ERROR_CODES.NETWORK_ERROR,
       ERROR_MESSAGES.NETWORK_ERROR
@@ -88,17 +88,17 @@ function parseError(error: any): ApiError {
   }
 
   // API Response with error structure
-  if (error.response) {
-    const data = error.response.data as ApiErrorResponse | any;
-    const status = error.response.status;
+  if ((error as AxiosError).response) {
+    const data = (error as AxiosError).response!.data as ApiErrorResponse | Record<string, unknown>;
+    const status = (error as AxiosError).response!.status;
 
     // Handle structured error response from backend
     if (data?.error) {
       return new ApiError(
-        data.error.code || ERROR_CODES.UNKNOWN,
-        data.error.message || getErrorMessageByStatus(status),
+        (data as Record<string, unknown>).error.code || ERROR_CODES.UNKNOWN,
+        (data as Record<string, unknown>).error.message || getErrorMessageByStatus(status),
         status,
-        data.error.details
+        (data as Record<string, unknown>).error.details
       );
     }
 
@@ -115,7 +115,7 @@ function parseError(error: any): ApiError {
     // Handle other response formats
     return new ApiError(
       getErrorCodeByStatus(status) || ERROR_CODES.UNKNOWN,
-      data?.message || getErrorMessageByStatus(status),
+      (data as Record<string, unknown>)?.message || getErrorMessageByStatus(status),
       status
     );
   }
@@ -123,7 +123,7 @@ function parseError(error: any): ApiError {
   // Unknown error
   return new ApiError(
     ERROR_CODES.UNKNOWN,
-    error?.message || ERROR_MESSAGES.SERVER_ERROR,
+    (error as Record<string, unknown>)?.message || ERROR_MESSAGES.SERVER_ERROR,
     500
   );
 }

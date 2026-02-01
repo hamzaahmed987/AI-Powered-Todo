@@ -17,8 +17,12 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
 
   useEffect(() => {
     // Initialize language on mount
-    const lang = initLanguage();
-    setCurrentLang(lang);
+    const timer = setTimeout(() => {
+      const lang = initLanguage();
+      setCurrentLang(lang);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLanguageChange = (lang: Language) => {

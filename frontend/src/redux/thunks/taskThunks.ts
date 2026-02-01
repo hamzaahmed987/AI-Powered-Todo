@@ -33,10 +33,10 @@ export const fetchTasks = createAsyncThunk(
         limit
       );
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to fetch tasks"
       );
     }
@@ -52,10 +52,10 @@ export const fetchTask = createAsyncThunk(
     try {
       const task = await tasksService.getTask(taskId);
       return task;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to fetch task"
       );
     }
@@ -71,10 +71,10 @@ export const createTask = createAsyncThunk(
     try {
       const task = await tasksService.createTask(data);
       return task;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to create task"
       );
     }
@@ -93,10 +93,10 @@ export const updateTask = createAsyncThunk(
     try {
       const task = await tasksService.updateTask(taskId, data);
       return task;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to update task"
       );
     }
@@ -112,10 +112,10 @@ export const deleteTask = createAsyncThunk(
     try {
       await tasksService.deleteTask(taskId);
       return taskId; // Return ID for removal from state
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to delete task"
       );
     }
@@ -131,10 +131,10 @@ export const completeTask = createAsyncThunk(
     try {
       const task = await tasksService.completeTask(taskId);
       return task;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue(
-        error?.response?.data?.error?.message ||
-          error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+          (error as Record<string, unknown>)?.message ||
           "Failed to complete task"
       );
     }

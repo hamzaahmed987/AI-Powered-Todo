@@ -256,7 +256,7 @@ export default function TaskItem({ task }: TaskItemProps) {
                   Delete this task?
                 </p>
                 <p className="text-center text-sm text-gray-600 mb-8">
-                  <span className="font-semibold text-gray-900">"{task.title}"</span> will be permanently deleted. This action cannot be undone.
+                  <span className="font-semibold text-gray-900">&#34;{task.title}&#34;</span> will be permanently deleted. This action cannot be undone.
                 </p>
 
                 {/* Buttons - Same Row */}

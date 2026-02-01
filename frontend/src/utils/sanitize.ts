@@ -82,7 +82,7 @@ export const sanitizeUrl = (url: string): string => {
  * @param obj - Object with string properties
  * @returns New object with sanitized values
  */
-export const sanitizeObject = <T extends Record<string, any>>(obj: T): T => {
+export const sanitizeObject = <T extends Record<string, unknown>>(obj: T): T => {
   const sanitized = { ...obj };
 
   for (const key in sanitized) {

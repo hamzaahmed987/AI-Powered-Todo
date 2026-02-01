@@ -36,7 +36,11 @@ export const useInitializeAuth = () => {
       }
     }
 
-    setIsInitialized(true);
+    const timer = setTimeout(() => {
+      setIsInitialized(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [dispatch, accessToken]);
 
   return {

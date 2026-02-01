@@ -132,7 +132,7 @@ export default function DashboardLayout({
                   Are you sure?
                 </p>
                 <p className="text-center text-sm text-gray-600 mb-8">
-                  You'll need to log in again to access your tasks and AI features.
+                  You&#39;ll need to log in again to access your tasks and AI features.
                 </p>
 
                 {/* Buttons - Same Row */}

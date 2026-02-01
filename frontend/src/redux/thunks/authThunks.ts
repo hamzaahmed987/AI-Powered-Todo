@@ -37,11 +37,11 @@ export const loginUser = createAsyncThunk(
         accessToken: result.access_token,
         tokenType: result.token_type,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error?.response?.data?.detail ||
-        error?.response?.data?.error?.message ||
-        error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.detail ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+        (error as Record<string, unknown>)?.message ||
         "Login failed";
       return rejectWithValue(errorMessage);
     }
@@ -74,11 +74,11 @@ export const registerUser = createAsyncThunk(
         accessToken: result.access_token,
         tokenType: result.token_type,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error?.response?.data?.detail ||
-        error?.response?.data?.error?.message ||
-        error?.message ||
+        (error as Record<string, unknown>)?.response?.data?.detail ||
+        (error as Record<string, unknown>)?.response?.data?.error?.message ||
+        (error as Record<string, unknown>)?.message ||
         "Registration failed";
       return rejectWithValue(errorMessage);
     }
@@ -94,7 +94,7 @@ export const logoutUser = createAsyncThunk(
     try {
       authService.logout();
       return null;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return rejectWithValue("Logout failed");
     }
   }

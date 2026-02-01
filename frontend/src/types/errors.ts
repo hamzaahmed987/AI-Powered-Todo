@@ -5,7 +5,7 @@
 export interface ErrorDetail {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface ApiErrorResponse {
@@ -17,7 +17,7 @@ export interface AppError {
   status?: number;
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 /**
@@ -26,9 +26,9 @@ export interface AppError {
 export class ApiError extends Error {
   status?: number;
   code: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 
-  constructor(code: string, message: string, status?: number, details?: Record<string, any>) {
+  constructor(code: string, message: string, status?: number, details?: Record<string, unknown>) {
     super(message);
     this.code = code;
     this.status = status;

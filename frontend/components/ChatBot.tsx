@@ -9,6 +9,13 @@ import { showToast } from "@/utils/toastUtils";
 import type { Task } from "@/redux/slices/taskSlice";
 import type { AppDispatch, RootState } from "@/redux/store";
 
+// Extend the Window interface to include SpeechRecognition
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  }
+}
+
 interface Message {
   id: string;
   text: string;
@@ -35,7 +42,7 @@ export default function ChatBot() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const inputValueRef = useRef<string>("");
@@ -57,8 +64,7 @@ export default function ChatBot() {
   // Initialize Speech Recognition API
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SpeechRecognition =
-        window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition; // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
@@ -71,7 +77,7 @@ export default function ChatBot() {
           setTranscript("");
         };
 
-        recognitionRef.current.onresult = (event: any) => {
+        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
           let interim = "";
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcriptSegment = event.results[i][0].transcript;
@@ -84,7 +90,7 @@ export default function ChatBot() {
           setTranscript(interim);
         };
 
-        recognitionRef.current.onerror = (event: any) => {
+        recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error("Speech recognition error:", event.error);
           const errorMsg =
             event.error === "not-allowed"
@@ -229,7 +235,7 @@ export default function ChatBot() {
                 dispatch(setTasks(tasksList));
               }
               dispatch(clearError());
-            } catch (fetchError: any) {
+            } catch (fetchError: unknown) {
               console.error("Failed to refresh task list:", fetchError);
               // Fallback: Try to parse action from response and update Redux directly
               try {
@@ -242,8 +248,8 @@ export default function ChatBot() {
                     id: response.task_data.id,
                     owner_id: currentTasks[0]?.owner_id || "",
                     title: response.task_data.title || "",
-                    status: (response.task_data.status as any) || "pending",
-                    priority: (response.task_data.priority as any) || "medium",
+                    status: response.task_data.status || "pending",
+                    priority: response.task_data.priority || "medium",
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   };
@@ -254,9 +260,12 @@ export default function ChatBot() {
               }
             }
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Handle API errors gracefully
-          const errorMessage = error?.response?.data?.detail || error?.message || "Failed to process your request. Please try again.";
+          const errorMessage =
+            (error as Record<string, unknown>)?.response?.data?.detail ||
+            (error as Record<string, unknown>)?.message ||
+            "Failed to process your request. Please try again.";
           showToast.chatError(errorMessage);
           const botResponse: Message = {
             id: (Date.now() + 1).toString(),

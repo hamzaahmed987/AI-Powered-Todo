@@ -1,13 +1,14 @@
 'use client';
 
+import React from 'react';
 import { IoAlertCircle, IoMailOutline, IoLockClosedOutline, IoPerson } from 'react-icons/io5';
 
 interface FormFieldProps {
   field: {
     name: string;
-    value: any;
-    onChange: (e: any) => void;
-    onBlur: (e: any) => void;
+    value: string | number | readonly string[];
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   };
   form: {
     errors: Record<string, string>;
@@ -23,7 +24,7 @@ interface FormFieldProps {
   required?: boolean;
 }
 
-export function FormField({
+export const FormField: React.FC<FormFieldProps> = ({
   field,
   form: { errors, touched },
   label,
@@ -35,7 +36,7 @@ export function FormField({
   className = '',
   required = false,
   ...props
-}: FormFieldProps) {
+}: FormFieldProps) => {
   const { name, value } = field;
   const error = touched[name] && errors[name];
   const hasError = !!error;
@@ -120,4 +121,4 @@ export function FormField({
       )}
     </div>
   );
-}
+};

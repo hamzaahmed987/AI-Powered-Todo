@@ -202,9 +202,10 @@ describe('AI Agent Features', () => {
 });
 
 describe('Redux Store Integration', () => {
-  test('should initialize with empty tasks', () => {
+  test('should initialize with empty tasks', async () => {
     // Import the task slice
-    const taskSlice = require('../src/redux/slices/taskSlice').default;
+    const taskSliceModule = await import('../src/redux/slices/taskSlice');
+    const taskSlice = taskSliceModule.default;
     const initialState = taskSlice(undefined, { type: '@@INIT' });
 
     expect(initialState.tasks).toEqual([]);
@@ -212,10 +213,11 @@ describe('Redux Store Integration', () => {
     expect(initialState.error).toBeNull();
   });
 
-  test('should handle setTasks action', () => {
+  test('should handle setTasks action', async () => {
     // Import the task slice and action
-    const taskSlice = require('../src/redux/slices/taskSlice').default;
-    const { setTasks } = require('../src/redux/slices/taskSlice');
+    const taskSliceModule = await import('../src/redux/slices/taskSlice');
+    const taskSlice = taskSliceModule.default;
+    const { setTasks } = taskSliceModule;
 
     const mockTasks = [
       {

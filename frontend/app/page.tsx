@@ -19,12 +19,17 @@ export default function Home() {
   const { openAuthModal } = useAuthModal();
 
   useEffect(() => {
-    setIsClient(true);
+    const timer = setTimeout(() => {
+      setIsClient(true);
+    }, 0);
+
     // Check if user has auth token
     const token = localStorage.getItem("accessToken");
     if (token) {
       router.push("/dashboard");
     }
+
+    return () => clearTimeout(timer);
   }, [router]);
 
   if (!isClient) {
