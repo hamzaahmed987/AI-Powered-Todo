@@ -1,0 +1,188 @@
+# DigitalOcean Kubernetes (DOKS) Deployment - Phase V
+# Prerequisites: doctl CLI authenticated, DOKS cluster created
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: todo-app
+  labels:
+    environment: production
+---
+# External Secrets for DigitalOcean
+apiVersion: v1
+kind: Secret
+metadata:
+  name: do-registry-secret
+  namespace: todo-app
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: <base64-encoded-docker-config>
+---
+# Backend Deployment with Dapr
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: todo-app
+  annotations:
+    dapr.io/enabled: "true"
+    dapr.io/app-id: "todo-backend"
+    dapr.io/app-port: "8000"
+    dapr.io/enable-metrics: "true"
+    dapr.io/metrics-port: "9090"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "todo-backend"
+        dapr.io/app-port: "8000"
+    spec:
+      imagePullSecrets:
+        - name: do-registry-secret
+      containers:
+        - name: backend
+          image: registry.digitalocean.com/your-registry/todo-backend:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: database-url
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: jwt-secret
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: todo-secrets
+                  key: openrouter-api-key
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-headless.todo-app.svc.cluster.local:9092"
+            - name: REDIS_URL
+              value: "redis://redis-master.todo-app.svc.cluster.local:6379"
+            - name: ENVIRONMENT
+              value: "production"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-frontend
+  namespace: todo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-frontend
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+    spec:
+      imagePullSecrets:
+        - name: do-registry-secret
+      containers:
+        - name: frontend
+          image: registry.digitalocean.com/your-registry/todo-frontend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "https://api.yourdomain.com/api/v1"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+# Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-backend
+  namespace: todo-app
+spec:
+  selector:
+    app: todo-backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-frontend
+  namespace: todo-app
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-name: "todo-lb"
+    service.beta.kubernetes.io/do-loadbalancer-size-slug: "lb-small"
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "http"
+    service.beta.kubernetes.io/do-loadbalancer-certificate-id: "<cert-id>"
+    service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
+spec:
+  selector:
+    app: todo-frontend
+  ports:
+    - port: 443
+      targetPort: 3000
+  type: LoadBalancer
+---
+# HPA
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todo-backend-hpa
+  namespace: todo-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todo-backend
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

@@ -1,0 +1,27 @@
+apiVersion: v2
+name: todo-app
+description: AI-Powered Todo Application Helm Chart
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - todo
+  - ai
+  - fastapi
+  - nextjs
+  - kubernetes
+maintainers:
+  - name: Hamza
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: kafka
+    version: "26.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: kafka.enabled
+  - name: redis
+    version: "18.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

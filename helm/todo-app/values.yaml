@@ -1,0 +1,121 @@
+# Default values for todo-app
+replicaCount:
+  backend: 3
+  frontend: 2
+
+image:
+  backend:
+    repository: todo-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: todo-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+service:
+  backend:
+    type: ClusterIP
+    port: 8000
+  frontend:
+    type: LoadBalancer
+    port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: todo.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+        - path: /api
+          pathType: Prefix
+          service: backend
+  tls:
+    - secretName: todo-tls
+      hosts:
+        - todo.example.com
+
+resources:
+  backend:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  frontend:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+autoscaling:
+  enabled: true
+  backend:
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilization: 70
+  frontend:
+    minReplicas: 2
+    maxReplicas: 8
+    targetCPUUtilization: 70
+
+# Database
+postgresql:
+  enabled: true
+  auth:
+    username: todouser
+    password: ""
+    database: tododb
+  primary:
+    persistence:
+      size: 10Gi
+
+# Kafka for event streaming (Phase V)
+kafka:
+  enabled: true
+  replicaCount: 3
+  topics:
+    - name: task-events
+      partitions: 3
+      replicationFactor: 2
+    - name: notifications
+      partitions: 3
+      replicationFactor: 2
+    - name: ai-requests
+      partitions: 3
+      replicationFactor: 2
+
+# Redis for caching
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+# Dapr configuration (Phase V)
+dapr:
+  enabled: true
+  appId: todo-app
+  appPort: 8000
+  components:
+    stateStore: redis
+    pubSub: kafka
+
+# Environment variables
+env:
+  DEBUG: "false"
+  ENVIRONMENT: "production"
+
+# Secrets (use external secrets in production)
+secrets:
+  jwtSecret: ""
+  openrouterApiKey: ""
+  databaseUrl: ""

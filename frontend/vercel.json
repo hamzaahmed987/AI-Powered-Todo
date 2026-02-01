@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://ai-powered-todo-five.vercel.app/api/v1",
+    "NEXT_PUBLIC_APP_ENV": "production",
+    "NEXT_PUBLIC_APP_NAME": "AI Todo App"
+  }
+}

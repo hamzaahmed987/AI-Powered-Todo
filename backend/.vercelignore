@@ -1,0 +1,61 @@
+# Exclude unnecessary files from Vercel deployment
+
+# Virtual environment
+.venv
+venv
+env
+
+# Testing
+tests/
+pytest.ini
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Development files
+.env
+.env.local
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# Build
+build/
+dist/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+README.md
+
+# Pre-commit hooks
+.pre-commit-config.yaml
+
+# Alembic migrations (optional - include if needed for DB initialization)
+# app/database/migrations/
+
+# Node modules (if frontend is included)
+frontend/
+node_modules/

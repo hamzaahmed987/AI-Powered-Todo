@@ -1,0 +1,22 @@
+# Minimal production requirements for Todo app
+# Use this for lean production deployments
+
+# Core Web Framework (Required)
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+
+# Database ORM (Required)
+sqlalchemy>=2.0.36
+psycopg[binary]>=3.1.0
+
+# Data Validation & Settings (Required)
+pydantic[email]==2.11.0
+pydantic-settings==2.5.2
+
+# Authentication & Security (Required)
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# API Utilities (Required)
+python-multipart==0.0.9
+python-dotenv==1.0.0

@@ -1,0 +1,39 @@
+# Use official Node runtime as parent image
+FROM node:18-alpine AS base
+
+# Set working directory
+WORKDIR /app
+
+# Copy package manager files
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy the rest of the application
+COPY frontend/ .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS production
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install production dependencies only
+COPY frontend/package*.json ./
+RUN npm ci --only=production --no-cache
+
+# Copy built application from previous stage
+COPY --from=base /app/.next ./.next
+COPY --from=base /app/public ./public
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/package*.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Define the command to run the application
+CMD ["npm", "start"]

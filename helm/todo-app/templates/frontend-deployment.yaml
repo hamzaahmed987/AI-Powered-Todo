@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todo-app.fullname" . }}-frontend
+  labels:
+    {{- include "todo-app.frontendLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount.frontend }}
+  selector:
+    matchLabels:
+      app: {{ include "todo-app.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ include "todo-app.fullname" . }}-frontend
+        {{- include "todo-app.frontendLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag }}"
+          imagePullPolicy: {{ .Values.image.frontend.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://{{ include "todo-app.fullname" . }}-backend:8000/api/v1"
+          resources:
+            {{- toYaml .Values.resources.frontend | nindent 12 }}

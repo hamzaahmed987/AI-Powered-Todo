@@ -1,0 +1,127 @@
+{
+  "common": {
+    "appName": "اے آئی ٹوڈو",
+    "loading": "لوڈ ہو رہا ہے...",
+    "error": "خرابی",
+    "success": "کامیابی",
+    "cancel": "منسوخ",
+    "save": "محفوظ کریں",
+    "delete": "حذف کریں",
+    "edit": "ترمیم کریں",
+    "create": "بنائیں",
+    "search": "تلاش کریں",
+    "filter": "فلٹر",
+    "sort": "ترتیب",
+    "close": "بند کریں",
+    "confirm": "تصدیق کریں",
+    "back": "واپس",
+    "next": "آگے",
+    "submit": "جمع کریں",
+    "clear": "صاف کریں"
+  },
+  "auth": {
+    "login": "لاگ ان",
+    "logout": "لاگ آؤٹ",
+    "register": "رجسٹر کریں",
+    "email": "ای میل",
+    "password": "پاس ورڈ",
+    "confirmPassword": "پاس ورڈ کی تصدیق",
+    "fullName": "پورا نام",
+    "forgotPassword": "پاس ورڈ بھول گئے؟",
+    "noAccount": "اکاؤنٹ نہیں ہے؟",
+    "hasAccount": "پہلے سے اکاؤنٹ ہے؟",
+    "signUp": "سائن اپ",
+    "signIn": "سائن ان",
+    "welcome": "خوش آمدید"
+  },
+  "tasks": {
+    "title": "کام",
+    "newTask": "نیا کام",
+    "addTask": "کام شامل کریں",
+    "editTask": "کام میں ترمیم",
+    "deleteTask": "کام حذف کریں",
+    "taskTitle": "کام کا عنوان",
+    "description": "تفصیل",
+    "deadline": "آخری تاریخ",
+    "priority": "ترجیح",
+    "status": "حیثیت",
+    "category": "زمرہ",
+    "tags": "ٹیگز",
+    "estimatedDuration": "تخمینی وقت",
+    "noTasks": "کوئی کام نہیں ملا",
+    "createFirst": "اپنا پہلا کام بنائیں",
+    "markComplete": "مکمل کریں",
+    "markIncomplete": "نامکمل کریں",
+    "priorities": {
+      "low": "کم",
+      "medium": "درمیانی",
+      "high": "زیادہ",
+      "urgent": "فوری"
+    },
+    "statuses": {
+      "pending": "زیر التواء",
+      "in_progress": "جاری",
+      "completed": "مکمل"
+    },
+    "recurring": {
+      "title": "دہرایا جانے والا کام",
+      "enable": "دہرانے والا کام بنائیں",
+      "pattern": "دہرائیں",
+      "endDate": "ختم ہونے کی تاریخ",
+      "patterns": {
+        "none": "کبھی نہیں",
+        "daily": "روزانہ",
+        "weekly": "ہفتہ وار",
+        "biweekly": "ہر 2 ہفتے",
+        "monthly": "ماہانہ",
+        "yearly": "سالانہ"
+      }
+    },
+    "reminder": {
+      "title": "یاددہانی",
+      "enable": "یاددہانی فعال کریں",
+      "time": "یاددہانی کا وقت",
+      "sent": "یاددہانی بھیج دی گئی"
+    }
+  },
+  "chat": {
+    "title": "اے آئی معاون",
+    "placeholder": "اپنے کاموں کے بارے میں کچھ بھی پوچھیں...",
+    "send": "بھیجیں",
+    "voiceInput": "آواز سے ٹائپ",
+    "listening": "سن رہا ہوں...",
+    "processing": "پروسیسنگ...",
+    "examples": {
+      "title": "کہہ کر دیکھیں:",
+      "example1": "گروسری خریدنے کا کام شامل کریں",
+      "example2": "میرے اہم کام دکھائیں",
+      "example3": "میٹنگ کام مکمل کریں",
+      "example4": "آج کے کام کیا ہیں؟"
+    }
+  },
+  "notifications": {
+    "title": "اطلاعات",
+    "enable": "اطلاعات فعال کریں",
+    "settings": "اطلاعات کی ترتیبات",
+    "taskReminder": "کام کی یاددہانی",
+    "dueAt": "آخری وقت",
+    "dontForget": "مکمل کرنا نہ بھولیں"
+  },
+  "dashboard": {
+    "title": "ڈیش بورڈ",
+    "overview": "جائزہ",
+    "totalTasks": "کل کام",
+    "completed": "مکمل",
+    "pending": "زیر التواء",
+    "overdue": "وقت گزر گیا",
+    "productivity": "پیداواری بصیرت",
+    "recentActivity": "حالیہ سرگرمی"
+  },
+  "errors": {
+    "networkError": "نیٹ ورک خرابی۔ براہ کرم اپنا کنکشن چیک کریں۔",
+    "serverError": "سرور خرابی۔ بعد میں دوبارہ کوشش کریں۔",
+    "unauthorized": "جاری رکھنے کے لیے لاگ ان کریں۔",
+    "notFound": "وسائل نہیں ملے۔",
+    "validationError": "براہ کرم اپنی معلومات چیک کریں۔"
+  }
+}

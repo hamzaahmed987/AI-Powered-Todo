@@ -1,0 +1,258 @@
+# Kubernetes Deployment Configuration
+
+## Overview
+This configuration allows deploying the AI-Powered Todo application to a Kubernetes cluster.
+
+## Namespace
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: todo-app
+```
+
+## Secrets
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: todo-app-secrets
+  namespace: todo-app
+type: Opaque
+data:
+  # Base64 encoded values
+  db-user: cG9zdGdyZXM=  # postgres
+  db-password: cGFzc3dvcmQ=  # password
+  jwt-secret: <base64_encoded_secret_here>
+  openai-api-key: <base64_encoded_api_key_here>
+  openrouter-api-key: <base64_encoded_api_key_here>
+```
+
+## Backend Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: todo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+      - name: backend
+        image: your-registry/todo-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: todo-app-secrets
+              key: db-url
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: todo-app-secrets
+              key: jwt-secret
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: todo-app-secrets
+              key: openai-api-key
+        - name: DEBUG
+          value: "false"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+```
+
+## Backend Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-backend-service
+  namespace: todo-app
+spec:
+  selector:
+    app: todo-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP
+```
+
+## Frontend Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-frontend
+  namespace: todo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: todo-frontend
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: your-registry/todo-frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          value: "http://todo-backend-service/api/v1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+```
+
+## Frontend Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-frontend-service
+  namespace: todo-app
+spec:
+  selector:
+    app: todo-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+```
+
+## Ingress Configuration
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todo-ingress
+  namespace: todo-app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - yourdomain.com
+    secretName: todo-tls-certificate
+  rules:
+  - host: yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-frontend-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: todo-backend-service
+            port:
+              number: 80
+```
+
+## Horizontal Pod Autoscaler for Backend
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todo-backend-hpa
+  namespace: todo-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todo-backend
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+## Horizontal Pod Autoscaler for Frontend
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todo-frontend-hpa
+  namespace: todo-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todo-frontend
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+## Deployment Commands
+```bash
+# Apply all configurations
+kubectl apply -f k8s-deployment.yaml
+
+# Check deployment status
+kubectl get pods -n todo-app
+kubectl get services -n todo-app
+kubectl get ingress -n todo-app
+
+# Scale deployments if needed
+kubectl scale deployment todo-backend --replicas=5 -n todo-app
+kubectl scale deployment todo-frontend --replicas=5 -n todo-app
+
+# View logs
+kubectl logs -f deployment/todo-backend -n todo-app
+kubectl logs -f deployment/todo-frontend -n todo-app
+```
