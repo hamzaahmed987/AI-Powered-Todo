@@ -23,6 +23,6 @@
     }
   ],
   "env": {
-    "ALLOWED_ORIGINS": "*"
+    "ALLOWED_ORIGINS": "*,https://github.com/hamzaahmed987/AI-Powered-Todo/tree/main/backend"
   }
 }
