@@ -23,6 +23,6 @@
     }
   ],
   "env": {
-    "ALLOWED_ORIGINS": "*,https://github.com/hamzaahmed987/AI-Powered-Todo/tree/main/backend"
+    "ALLOWED_ORIGINS": "*,https://ai-powered-todo-phi.vercel.app/"
   }
 }
